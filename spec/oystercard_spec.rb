@@ -2,6 +2,7 @@ require 'oystercard'
 
 describe Oystercard do
   let(:oystercard) { described_class.new}
+  let(:station){double :station}
   it {is_expected.to respond_to :in_journey?}
 
 
@@ -18,18 +19,37 @@ describe Oystercard do
   describe '#touch_in' do
     it {is_expected.to respond_to :touch_in}
     it 'changes active status to true when it has been touched in' do
-    oystercard.touch_in
-    expect(oystercard.active).to be true
+    oystercard.top_up(5)
+    oystercard.touch_in(station)
+    expect(oystercard.in_journey?)
+    end
+
+    it 'denies entry if balance is less than £1' do
+    expect{ oystercard.touch_in(station) }.to raise_error 'Insufficient funds'
+    end
+
+    it 'can record the entry station after being touched in' do
+      oystercard.top_up(10)
+      oystercard.touch_in(station)
+      expect(oystercard.entry_station).to eq station
+    end
+
   end
-  end
-  describe '#touch_out'do
+  describe '#touch_out' do
   it {is_expected.to respond_to :touch_out}
   it 'changes active status to false when it has been touched out' do
-  oystercard.touch_in
+  oystercard.top_up(5)
+  oystercard.touch_in(station)
   oystercard.touch_out
   expect(oystercard.active).to be false
   end
+
+  it 'deducts the minimum fare on touch out' do
+  oystercard.top_up(5)
+  oystercard.touch_in(station)
+  expect { oystercard.touch_out }.to change { oystercard.balance}.by(-Oystercard::MINIMUM_FARE)
   end
+end
 
   describe '#top_up' do
     it 'increases the total balance with the amount inputted by the user' do
@@ -38,12 +58,6 @@ describe Oystercard do
 
     it 'rasises an error if balance total exceeds maximum balance' do
       expect { oystercard.top_up(100) }.to raise_error("Exceeds £#{oystercard.maximum} maximum limit")
-    end
-  end
-  describe '#deduct' do
-    it 'should be able to decuct a fare' do
-      oystercard.top_up(10)
-      expect {oystercard.deduct 5}.to change{oystercard.balance}.by -5
     end
   end
 end
