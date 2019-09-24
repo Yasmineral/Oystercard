@@ -40,17 +40,21 @@ describe Oystercard do
   it 'changes active status to false when it has been touched out' do
   oystercard.top_up(5)
   oystercard.touch_in(station)
-  oystercard.touch_out
+  oystercard.touch_out(station)
   expect(oystercard.active).to be false
   end
 
   it 'deducts the minimum fare on touch out' do
   oystercard.top_up(5)
   oystercard.touch_in(station)
-  expect { oystercard.touch_out }.to change { oystercard.balance}.by(-Oystercard::MINIMUM_FARE)
+  expect { oystercard.touch_out(station) }.to change { oystercard.balance}.by(-Oystercard::MINIMUM_FARE)
   end
 end
-
+describe '#history' do
+  it 'initializes with an empty array of previous journeys' do
+    expect(oystercard.history).to be_empty
+  end
+end
   describe '#top_up' do
     it 'increases the total balance with the amount inputted by the user' do
       expect { oystercard.top_up(1) }.to change { oystercard.balance }.by 1
