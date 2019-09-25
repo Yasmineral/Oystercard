@@ -27,13 +27,20 @@ attr_reader :maximum , :active , :entry_station , :history , :exit_station
 
   def touch_out(station)
     deduct(MINIMUM_FARE)
-    @entry_station = nil
-    @exit_ststion = station
+    @exit_station = station
+    record_history
+    @exit_station = nil
+    @entry_station = nil 
   end
 
   def top_up(amount)
     fail "Exceeds £#{maximum} maximum limit" if over_max?(amount)
     @balance += amount
+  end
+
+  def record_history
+    entry = { :entry_station => @entry_station, :exit_station => @exit_station }
+    @history << entry
   end
 
   private

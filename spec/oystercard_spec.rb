@@ -8,7 +8,7 @@ describe Oystercard do
 
   describe '#initialize' do
     it 'initializes with a balance of 0 if no value is given by the user' do
-    expect(oystercard.balance).to eq 0
+      expect(oystercard.balance).to eq 0
     end
     it 'initializes in an inactive state' do
       oystercard = Oystercard.new
@@ -19,13 +19,13 @@ describe Oystercard do
   describe '#touch_in' do
     it {is_expected.to respond_to :touch_in}
     it 'changes active status to true when it has been touched in' do
-    oystercard.top_up(5)
-    oystercard.touch_in(station)
-    expect(oystercard.in_journey?)
+      oystercard.top_up(5)
+      oystercard.touch_in(station)
+      expect(oystercard.in_journey?)
     end
 
     it 'denies entry if balance is less than £1' do
-    expect{ oystercard.touch_in(station) }.to raise_error 'Insufficient funds'
+      expect{ oystercard.touch_in(station) }.to raise_error 'Insufficient funds'
     end
 
     it 'can record the entry station after being touched in' do
@@ -36,18 +36,26 @@ describe Oystercard do
 
   end
   describe '#touch_out' do
-  it {is_expected.to respond_to :touch_out}
-  it 'changes active status to false when it has been touched out' do
-  oystercard.top_up(5)
-  oystercard.touch_in(station)
-  oystercard.touch_out(station)
-  expect(oystercard.active).to be false
+    it {is_expected.to respond_to :touch_out}
+    it 'changes active status to false when it has been touched out' do
+      oystercard.top_up(5)
+      oystercard.touch_in(station)
+      oystercard.touch_out(station)
+      expect(oystercard.active).to be false  
   end
+    
+    it 'adds a new hash into the history array' do
+      oystercard.top_up(5)
+      oystercard.touch_in(@entry_station)
+      oystercard.touch_out(@exit_station)
+      expect(oystercard.history).to include({ :entry_station => @entry_station, :exit_station => @exit_station })
+
+    end
 
   it 'deducts the minimum fare on touch out' do
-  oystercard.top_up(5)
-  oystercard.touch_in(station)
-  expect { oystercard.touch_out(station) }.to change { oystercard.balance}.by(-Oystercard::MINIMUM_FARE)
+    oystercard.top_up(5)
+    oystercard.touch_in(station)
+    expect { oystercard.touch_out(station) }.to change { oystercard.balance}.by(-Oystercard::MINIMUM_FARE)
   end
 end
 describe '#history' do
