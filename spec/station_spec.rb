@@ -3,13 +3,13 @@ require 'oystercard'
 require 'journey'
 
 describe Station do
-let(:station) { described_class.new }
+subject(:station) { described_class.new("Waltho", 3) }
 
-  it 'contains a Zone variable' do
-    expect(station).to respond_to(:zone)  
+  it 'knows its name' do
+    expect(subject.name).to eq("Waltho")
   end
 
-  it 'contains a Name variable' do
-    expect(station).to respond_to(:name)
+  it 'know its zone' do
+    expect(subject.zone).to eq(3)
   end
 end

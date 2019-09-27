@@ -59,10 +59,13 @@ describe Oystercard do
   end
 end
 describe '#history' do
+
   it 'initializes with an empty array of previous journeys' do
     expect(oystercard.history).to be_empty
   end
-end
+  it 'retrieves journey history from the Journey class' do
+  
+  end
   describe '#top_up' do
     it 'increases the total balance with the amount inputted by the user' do
       expect { oystercard.top_up(1) }.to change { oystercard.balance }.by 1

@@ -2,31 +2,48 @@ require 'journey'
 require 'oystercard'
 require 'station'
 
-describe Journey do 
-  #it 'adds a new hash into the history array' do
-   #     card = Oystercard.new
-    #    card.top_up(5)
-     #   card.touch_in(@entry_station)
-      #  card.touch_out(@exit_station)
-       # expect(card.history).to include({ :entry_station => @entry_station, :exit_station => @exit_station })
-      #end
+describe Journey do  
+  subject(:journey) { described_class.new }
+  let(:station) { double(:station) }
+  let(:station2) { double(:station2) }
 
-describe '#start_journey' do
-let(:oystercard) { Oystercard.new.top_up(5) }
-let(:station) { double :station }
-  it 'changes the entry station varaible to the station that has been touched in' do
-    oystercard.touch_in(station)
-    expect(entry_station).to eq station
+  it 'can retrieve its journey history' do
+    journey.start_journey(station)
+    journey.end_journey(station)
+    expect(journey.journey_history).to eq [{ :entry_station => station, :exit_station => station }] 
+  end
+    
+  describe '#start_journey' do
+    it 'starts a journey' do
+      expect(journey.start_journey(station)).to eq station
+    end
+    it 'sets entry_station variable to station' do
+      journey.start_journey(station)  
+      expect(subject.entry_station).to eq station
+    end
+    it 'stores pentalty journeys if touched in twice' do
+      journey.start_journey(station)
+      journey.start_journey(station2)
+      expect(journey.journey_history).to eq [{ :entry_station => station, :exit_station => nil }]
+    end
   end
 
-end
+  describe '#end_journey' do
+    it 'calculates the fare upon exiting the station' do
+      journey.start_journey(station)
+      journey.end_journey(station)
+      expect(journey.fare).to eq 1 
+    end
+    it 'stores penalty journeys if touched out twice' do
+      journey.end_journey(station)
+      expect(journey.journey_history).to eq [{ :entry_station => nil, :exit_station => station }]
+    end
+  end
 
-
-
-
-
-
-
-
-
+  describe '#fare' do
+    it 'charges a penalty fare if user is in an active journey' do
+      journey.end_journey(station)
+      expect(journey.fare).to eq 6
+    end
+  end
 end
