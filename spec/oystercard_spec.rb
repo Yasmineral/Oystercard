@@ -37,35 +37,37 @@ describe Oystercard do
   end
   describe '#touch_out' do
     it {is_expected.to respond_to :touch_out}
+
     it 'changes active status to false when it has been touched out' do
       oystercard.top_up(5)
       oystercard.touch_in(station)
       oystercard.touch_out(station)
       expect(oystercard.active).to be false  
-  end
+    end
     
     it 'adds a new hash into the history array' do
       oystercard.top_up(5)
       oystercard.touch_in(@entry_station)
       oystercard.touch_out(@exit_station)
       expect(oystercard.history).to include({ :entry_station => @entry_station, :exit_station => @exit_station })
-
     end
 
-  it 'deducts the minimum fare on touch out' do
-    oystercard.top_up(5)
-    oystercard.touch_in(station)
-    expect { oystercard.touch_out(station) }.to change { oystercard.balance}.by(-Oystercard::MINIMUM_FARE)
+    it 'deducts the minimum fare on touch out' do
+      oystercard.top_up(5)
+      oystercard.touch_in(station)
+      expect { oystercard.touch_out(station) }.to change { oystercard.balance}.by(-Oystercard::MINIMUM_FARE)
+    end
   end
-end
-describe '#history' do
+  describe '#history' do
 
-  it 'initializes with an empty array of previous journeys' do
-    expect(oystercard.history).to be_empty
+    it 'initializes with an empty array of previous journeys' do
+      expect(oystercard.history).to be_empty
+    end
+    it 'retrieves journey history from the Journey class' do
+    
+    end
   end
-  it 'retrieves journey history from the Journey class' do
   
-  end
   describe '#top_up' do
     it 'increases the total balance with the amount inputted by the user' do
       expect { oystercard.top_up(1) }.to change { oystercard.balance }.by 1
